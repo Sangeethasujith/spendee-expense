@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Spendee.Configuration;
 using Spendee.Data;
 using Spendee.Models;
 using Spendee.Repository;
@@ -31,8 +32,7 @@ namespace Spendee
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            //services.AddScoped<IDataRepository<Category>, CategoryRepository>();
-            //services.AddScoped<IDataRepository<Expense>, ExpenseRepository>();
+            
             services.AddDbContext<DataContext>(options => {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
                 });
@@ -40,6 +40,10 @@ namespace Spendee
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Spendee", Version = "v1" });
             });
+
+            services.AddAutoMapper(typeof(Startup));
+            //services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.ResolveDependencies();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,7 +56,7 @@ namespace Spendee
             }
 
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Spendee v1"));
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1"));
 
             app.UseHttpsRedirection();
 

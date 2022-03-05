@@ -7,7 +7,7 @@ namespace Spendee.Models
 {
     public class Category:Entity
     {
-        public string Name;
-        public IEnumerable<Expense> Expense;
+        public string Name { get; set; }
+        public IEnumerable<Expense> Expenses { get; set; }
     }
 }

@@ -4,11 +4,13 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Spendee.Models
+namespace Spendee.DTOs
 {
-    public abstract class Entity
+    public class CategoryAddDto
     {
-        
-        public int Id { get; set; }
+        [Required(ErrorMessage="This field{0} is required")]
+
+        public string Name { get; set; }
+
     }
 }

@@ -1,4 +1,5 @@
-﻿using Spendee.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Spendee.Data;
 using Spendee.Models;
 using System;
 using System.Collections.Generic;
@@ -7,41 +8,32 @@ using System.Threading.Tasks;
 
 namespace Spendee.Repository
 {
-    public class ExpenseRepository
+    public class ExpenseRepository : Repository<Expense>, IExpenseRepository
     {
-        private readonly DataContext _context;
+        public ExpenseRepository(DataContext context) : base(context) { }
 
-        public ExpenseRepository(DataContext context)
+        public override async Task<List<Expense>> GetAll()
         {
-            _context = context;
+            return await Db.Expenses.AsNoTracking().Include(e => e.Category).OrderBy(e => e.Name).ToListAsync();
         }
 
-        public void Add(Expense entity)
+        public override async Task<Expense> GetById(int id)
         {
-            _context.Expenses.Add(entity);
-            _context.SaveChanges();
+            return await Db.Expenses.AsNoTracking().Include(e => e.Category).Where(e => e.Id==id).FirstOrDefaultAsync();
         }
 
-        public void Delete(Expense entity)
+        public async Task<IEnumerable<Expense>> GetExpensesByCategory(int categoryId)
         {
-            _context.Expenses.Remove(entity);
-            _context.SaveChanges(); 
+            return await Search(c => c.CategoryId == categoryId);
         }
 
-        public Expense Get(long id)
+        public async Task<IEnumerable<Expense>> SearchExpenseWithCategory(string searchedValue)
         {
-            return _context.Expenses.FirstOrDefault(c => c.Id == id);
-        }
-
-        public IEnumerable<Expense> GetAll()
-        {
-            return _context.Expenses.ToList();
-        }
-
-        public void Update(Expense expense, Expense entity)
-        {
-            expense.Name=entity.Name;
-            _context.SaveChanges();    
+            return await Db.Expenses.AsNoTracking()
+                .Include(e => e.Category)
+                .Where(e => e.Name.Contains(searchedValue) ||
+                        e.PaymentType.Contains(searchedValue) ||
+                        e.Category.Name.Contains(searchedValue)).ToListAsync();
         }
     }
 }

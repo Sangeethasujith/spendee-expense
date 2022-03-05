@@ -12,12 +12,12 @@ namespace Spendee.Data.Mappings
     {
         public void Configure(EntityTypeBuilder<Expense> builder)
         {
-            builder.HasKey(c => c.Id);
-            builder.Property(c => c.Name).IsRequired().HasColumnType("Varchar(50)");
-            builder.Property(c => c.Value).IsRequired();
-            builder.Property(c => c.PaymentType).IsRequired().HasColumnType("Varchar(50)");
-            builder.Property(c => c.Date).IsRequired();
-            builder.Property(c => c.CategoryId).IsRequired();
+            builder.HasKey(e => e.Id);
+            builder.Property(e => e.Name).IsRequired().HasColumnType("varchar(50)");
+            builder.Property(e => e.Value).IsRequired();
+            builder.Property(e => e.PaymentType).IsRequired().HasColumnType("varchar(50)");
+            builder.Property(e => e.Date).IsRequired();
+            builder.Property(e => e.CategoryId).IsRequired();
             builder.ToTable("Expenses");
         }
     }

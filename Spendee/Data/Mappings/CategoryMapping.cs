@@ -14,10 +14,10 @@ namespace Spendee.Data.Mappings
         {
             builder.HasKey(c=>c.Id);
 
-            builder.Property(c => c.Name).IsRequired().HasColumnType("Varchar(150)");
+            builder.Property(c => c.Name).IsRequired().HasColumnType("varchar(150)");
 
             //1:N=> Category:Expenses
-            builder.HasMany(c => c.Expense).WithOne(b => b.Category).HasForeignKey(b => b.CategoryId);
+            builder.HasMany(c => c.Expenses).WithOne(b => b.Category).HasForeignKey(b => b.CategoryId);
 
             builder.ToTable("Categories");
         }

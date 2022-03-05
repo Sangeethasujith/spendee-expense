@@ -1,4 +1,5 @@
 ﻿using Spendee.Models;
+using Spendee.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,39 +9,59 @@ namespace Spendee.Services
 {
     public class CategoryService : ICategoryService
     {
-        public Task<Category> Add(Category category)
+        private readonly ICategoryRepository _categoryRepository;
+        private readonly IExpenseService _expenseService;
+
+        public CategoryService(ICategoryRepository categoryRepository,IExpenseService expenseService)
         {
-            throw new NotImplementedException();
+            _categoryRepository = categoryRepository;
+            _expenseService = expenseService;
+        }
+        public async Task<Category> Add(Category category)
+        {
+            if (_categoryRepository.Search(c => c.Name == category.Name).Result.Any())
+                return null;
+
+            await _categoryRepository.Add(category);
+            return category;
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            _categoryRepository?.Dispose();
         }
 
-        public Task<IEnumerable<Category>> GetAll()
+        public async Task<IEnumerable<Category>> GetAll()
         {
-            throw new NotImplementedException();
+            return await _categoryRepository.GetAll();
         }
 
-        public Task<Category> GetById(int id)
+        public async Task<Category> GetById(int id)
         {
-            throw new NotImplementedException();
+            return await _categoryRepository.GetById(id);
         }
 
-        public Task<bool> Remove(Category category)
+        public async Task<bool> Remove(Category category)
         {
-            throw new NotImplementedException();
+            var expenses = await _expenseService.GetExpensesByCategory(category.Id);
+            if (expenses.Any())
+                return false;
+            await _categoryRepository.Remove(category);
+            return true; 
         }
 
-        public Task<IEnumerable<Category>> Search(string categoryName)
+        public async Task<IEnumerable<Category>> Search(string categoryName)
         {
-            throw new NotImplementedException();
+            return await _categoryRepository.Search(c => c.Name.Contains(categoryName));
         }
 
-        public Task<Category> Update(Category category)
+        public async Task<Category> Update(Category category)
         {
-            throw new NotImplementedException();
+            if (_categoryRepository.Search(c => c.Name == category.Name && c.Id != category.Id).Result.Any())
+                return null;
+
+            await _categoryRepository.Update(category);
+            return category;
         }
     }
 }
